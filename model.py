@@ -33,7 +33,8 @@ PARAMS = {
     'ridge': 1.0,          # ridge on the size slope
     'extra_spread': 0.25,  # extra log spread per unit of log size beyond the biggest comparable
     'min_neighbours': 5,
-    'smooth': True,        # 3-point smoothing of the hourly centre and spread
+    'smooth': True,
+    'bias': -0.08,         # log shift of the whole curve: the fit's mean ratio sits above the median        # 3-point smoothing of the hourly centre and spread
 }
 
 
@@ -259,6 +260,10 @@ def forecast(hour1, notes, comparables, params=None):
             m = sum(wj * mus[j] for wj, j in zip(w, range(lo, hi + 1)))
             s = sum(wj * sds[j] for wj, j in zip(w, range(lo, hi + 1)))
             out[i]['q'] = quantiles(p1, m, s)
+    if p['bias']:
+        shift = math.exp(p['bias'])
+        for r in out:
+            r['q'] = [max(0.01, min(1e9, q * shift)) for q in r['q']]
     for r in out:
         r.pop('_mu', None)
         r.pop('_sd', None)
