@@ -29,12 +29,12 @@ PARAMS = {
     'tau_pat': 1.0,        # weight dividend for each unlock-pattern mismatch
     'size_clamp': 2.0,     # the size slope is read no further than this from the target
     'sig_floor': 0.06,     # smallest log spread of an hour
-    'k': 0.70,             # spread multiplier (calibration on the comparables)
+    'k': 0.62,             # spread multiplier (calibration on the comparables)
     'ridge': 1.0,          # ridge on the size slope
     'extra_spread': 0.25,  # extra log spread per unit of log size beyond the biggest comparable
     'min_neighbours': 5,
-    'smooth': True,
-    'bias': -0.08,         # log shift of the whole curve: the fit's mean ratio sits above the median        # 3-point smoothing of the hourly centre and spread
+    'smooth': True,        # 3-point smoothing of the hourly centre and spread
+    'bias': 0.0,           # a log shift of the whole curve, for a fit whose centre is off
 }
 
 
