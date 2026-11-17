@@ -109,10 +109,22 @@ def solve(a, b):
 
 
 def patterns(text):
-    """(rolling midnight local, single global unlock) read off an unlock note."""
+    """(rolling midnight local, single global unlock) read off an unlock note.
+
+    The case's notes say when the game really unlocked, in words: "a rolling
+    midnight local release", "the unlock rolls at local midnight ... US Eastern
+    05:00Z", or "a single simultaneous global unlock".  Both are read with a
+    little slack, since the wording differs from launch to launch; a note that
+    says neither (unverified) is treated as neither.
+    """
     t = (text or '').lower()
-    rolling = 1.0 if ('midnight local' in t or 'rolling' in t) else 0.0
-    glob = 1.0 if ('simultaneous' in t or 'global unlock' in t or 'single global' in t) else 0.0
+    glob = 0.0
+    if 'no simultaneous' not in t:
+        if 'simultaneous' in t or 'global unlock' in t or 'single global' in t:
+            glob = 1.0
+    midnight = 'midnight' in t
+    rolls = 'roll' in t or 'midnight local' in t or 'local midnight' in t
+    rolling = 1.0 if (midnight and rolls) else 0.0
     return rolling, glob
 
 
