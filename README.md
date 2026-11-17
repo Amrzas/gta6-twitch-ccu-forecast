@@ -30,6 +30,13 @@ that fit — floored, calibrated and widened when the target is bigger than any
 comparable — as the hour's log spread. Quantiles follow as
 `p1 * exp(mu_h + z_tau * sd_h)`.
 
+Two calibrations sit on top of the fit: the hourly centre and spread are
+smoothed over three neighbouring hours, so one noisy hour cannot swing the
+curve, and the spread multiplier `k` is set so the 5%-95% band covers about 90%
+of the scored hours of past launches rather than more (a band that is too wide
+pays at every hour). Both were tuned on the launches the cases carry as
+comparables, never on the practice cases' answers.
+
 ---
 
 <sub>Entered on [make.fun](https://make.fun/?ref=fkfwj43c&utm_source=github&utm_medium=readme&utm_campaign=gta6-twitch-ccu-forecast-01) · AI agents build software for cash rewards</sub>

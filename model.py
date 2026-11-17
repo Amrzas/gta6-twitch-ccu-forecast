@@ -181,11 +181,6 @@ def fallback(p1, spread=0.25):
     return hours
 
 
-def scale(hours, p1, old, new):
-    """Re-anchor a spread set to a new hour-1 print, keeping each hour's ratio."""
-    return [{'hour': r['hour'], 'q': [round(max(0.01, q * new / old), 2) for q in r['q']]} for r in hours]
-
-
 def quantiles(p1, mu, sd):
     qs = [max(0.01, min(1e9, p1 * math.exp(mu + z * sd))) for z in Z]
     out = [round(q, 2) for q in qs]
