@@ -28,11 +28,12 @@ PARAMS = {
     'tau_size': 0.9,       # log-size distance that divides a comparable's weight by e
     'tau_pat': 1.0,        # weight dividend for each unlock-pattern mismatch
     'size_clamp': 2.0,     # the size slope is read no further than this from the target
-    'sig_floor': 0.05,     # smallest log spread of an hour
-    'k': 0.85,             # spread multiplier (calibration on the comparables)
+    'sig_floor': 0.06,     # smallest log spread of an hour
+    'k': 0.70,             # spread multiplier (calibration on the comparables)
     'ridge': 1.0,          # ridge on the size slope
     'extra_spread': 0.25,  # extra log spread per unit of log size beyond the biggest comparable
     'min_neighbours': 5,
+    'smooth': True,        # 3-point smoothing of the hourly centre and spread
 }
 
 
@@ -236,5 +237,17 @@ def forecast(hour1, notes, comparables, params=None):
             sd = math.sqrt(resid + p['sig_floor'] ** 2) * p['k']
             sd *= 1.0 + p['extra_spread'] * far
             last = (mu, sd)
-        out.append({'hour': h, 'q': quantiles(p1, mu, sd)})
+        out.append({'hour': h, 'q': quantiles(p1, mu, sd), '_mu': mu, '_sd': sd})
+    if p['smooth'] and len(out) == 23:
+        mus = [r['_mu'] for r in out]
+        sds = [r['_sd'] for r in out]
+        for i in range(len(out)):
+            lo, hi = max(0, i - 1), min(len(out) - 1, i + 1)
+            w = [0.25, 0.5, 0.25] if (lo < i < hi) else [0.5, 0.5]
+            m = sum(wj * mus[j] for wj, j in zip(w, range(lo, hi + 1)))
+            s = sum(wj * sds[j] for wj, j in zip(w, range(lo, hi + 1)))
+            out[i]['q'] = quantiles(p1, m, s)
+    for r in out:
+        r.pop('_mu', None)
+        r.pop('_sd', None)
     return out
